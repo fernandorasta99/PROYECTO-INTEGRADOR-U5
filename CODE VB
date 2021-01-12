@@ -1,0 +1,48 @@
+
+Private Sub Command1_Click()
+Cls
+End Sub
+Private Sub Form_Load()
+Timer1.Enabled = False
+End Sub
+
+Private Sub Command2_Click()
+Timer1.Interval = 100
+MSComm1.CommPort = Text4.Text 'Ajustar al puerto real de su arduino en su PC
+MSComm1.Settings = "9600,n,8,1" 'Velocidad, Paridad, Bits por Caracter, Bits paro
+MSComm1.InputMode = comInputModeText
+MSComm1.PortOpen = True 'abre el puerto de comunicacion
+'
+Timer1.Enabled = True
+End Sub
+
+Private Sub Timer1_Timer()
+Dim valor As Integer  'declaramos nuestras variables
+Dim porcentaje As Single
+Dim barra1 As Integer
+Dim datoAnterior As Integer
+'Verifica si existen datos en el buffer del puerto
+If MSComm1.InBufferCount <> 0 Then
+'Si existen datos los retira
+valor = MSComm1.Input
+datoAnterior = valor
+
+'Calcula el nivel de tensión que obtuvo el ADC
+porcentaje = valor / 1023 * 100
+
+'Actualiza la ventana con la información recibida
+Text1.Text = valor
+Text2.Text = Round(porcentaje, 2)
+Text3.Text = Text2.Text
+barra1 = valor * 3
+'
+'Creamos un cuadrado
+'    Line (500, 4000)-(1600, barra1), RGB(0, 0, 255), BF
+Shape1.Height = barra1
+Shape1.Top = 4000 - barra1
+End If
+ If datoAnterior < valor Then
+    Cls
+    End If
+End Sub
+
